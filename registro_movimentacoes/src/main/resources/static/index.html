@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Controle Financeiro</title>
+</head>
+<body>
+
+    <script>
+        if (!localStorage.getItem("usuario")) {
+            window.location.href = "login.html";
+        }
+    </script>
+
+    <h1>Lançamentos</h1>
+
+    <button onclick="logout()">Sair</button>
+
+    <hr>
+
+    <h2>Novo / Editar Lançamento</h2>
+
+    <input id="descricao" placeholder="Descrição">
+    <input id="valor" type="number" placeholder="Valor">
+
+    <select id="tipo">
+        <option value="CREDITO">Crédito</option>
+        <option value="DEBITO">Débito</option>
+    </select>
+
+    <select id="situacao">
+        <option value="PENDENTE">Pendente</option>
+        <option value="PAGO">Pago</option>
+    </select>
+
+    <button onclick="salvar()">Salvar</button>
+
+    <hr>
+
+    <h2>Lista</h2>
+
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Descrição</th>
+                <th>Valor</th>
+                <th>Tipo</th>
+                <th>Situação</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody id="tabela"></tbody>
+    </table>
+
+    <script src="js/app.js"></script>
+
+</body>
+</html>

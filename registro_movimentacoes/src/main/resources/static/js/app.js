@@ -1,4 +1,4 @@
-const API = "http://localhost:8080/lancamentos";
+const API = "http://177.44.248.51:8081/lancamentos";
 
 let editandoId = null;
 

@@ -11,15 +11,20 @@ public class LancamentoService
 {
 
     private final LancamentoRepository repository;
+    private final EmailService emailService;
 
-    public LancamentoService(LancamentoRepository repository) 
+    public LancamentoService(LancamentoRepository repository, EmailService emailService) 
     {
         this.repository = repository;
+        this.emailService = emailService;
     }
 
     public Lancamento salvar(Lancamento lancamento) 
     {
-        return repository.save(lancamento);
+        Lancamento salvo = repository.save(lancamento);
+        emailService.enviarEmailNotificacao("Novo Lançamento Criado", 
+                "Um novo lançamento de " + lancamento.getTipo() + " no valor de R$ " + lancamento.getValor() + " foi registrado.");
+        return salvo;
     }
 
     public List<Lancamento> listarTodos() 
@@ -35,6 +40,9 @@ public class LancamentoService
     public Lancamento atualizar(String id, Lancamento lancamento)
     {
         lancamento.setId(id);
-        return repository.save(lancamento);
+        Lancamento atualizado = repository.save(lancamento);
+        emailService.enviarEmailNotificacao("Lançamento Atualizado", 
+                "O lançamento '" + lancamento.getDescricao() + "' foi atualizado com sucesso.");
+        return atualizado;
     }
 }

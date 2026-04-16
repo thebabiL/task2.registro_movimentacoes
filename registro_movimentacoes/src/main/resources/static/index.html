@@ -18,6 +18,24 @@
 
     <hr>
 
+    <h2>Filtros e Relatório</h2>
+    
+    <label>Data:</label>
+    <input type="date" id="filtroData">
+    
+    <label>Situação:</label>
+    <select id="filtroSituacao">
+        <option value="">Todas</option>
+        <option value="PENDENTE">Pendente</option>
+        <option value="PAGO">Pago</option>
+    </select>
+
+    <button onclick="filtrar()">Filtrar</button>
+    <button onclick="limparFiltros()">Limpar Filtros</button>
+    <button onclick="exportarPDF()" style="background-color: #d32f2f; color: white; border: none; padding: 3px 8px; cursor: pointer; margin-left: 10px;">Exportar para PDF</button>
+
+    <hr>
+
     <h2>Novo / Editar Lançamento</h2>
 
     <input id="descricao" placeholder="Descrição">

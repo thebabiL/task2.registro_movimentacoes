@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
+
 import task2.registro_movimentacoes.model.Lancamento;
 import task2.registro_movimentacoes.service.LancamentoService;
 import task2.registro_movimentacoes.service.PdfService;
@@ -18,7 +19,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 
 @WebMvcTest(LancamentoController.class)
-public class LancamentoControllerTest {
+class LancamentoControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -31,7 +32,8 @@ public class LancamentoControllerTest {
 
     // Teste 17
     @Test
-    public void deveListarLancamentos() throws Exception {
+    void deveListarLancamentos() throws Exception 
+    {
         when(service.listarTodos()).thenReturn(Arrays.asList(new Lancamento(), new Lancamento()));
 
         mockMvc.perform(get("/lancamentos"))
@@ -40,14 +42,16 @@ public class LancamentoControllerTest {
 
     // Teste 18
     @Test
-    public void deveDeletarLancamentoERetornarOk() throws Exception {
+    void deveDeletarLancamentoERetornarOk() throws Exception 
+    {
         mockMvc.perform(delete("/lancamentos/123"))
                 .andExpect(status().isOk());
     }
 
     // Teste 19
     @Test
-    public void deveExportarPdf() throws Exception {
+    void deveExportarPdf() throws Exception 
+    {
         when(service.listarTodos()).thenReturn(Arrays.asList(new Lancamento()));
         when(pdfService.gerarRelatorioLancamentos(org.mockito.ArgumentMatchers.anyList()))
                 .thenReturn(new byte[]{1, 2, 3});
@@ -57,10 +61,11 @@ public class LancamentoControllerTest {
                 .andExpect(header().string("Content-Disposition", "attachment; filename=relatorio_financeiro.pdf"));
     }
 
-    // Teste 20
+    // Teste 20 - ATUALIZADO COM O FILTRO 'TIPO'
     @Test
-    public void deveAceitarParametrosDeFiltroNaListagem() throws Exception {
-        mockMvc.perform(get("/lancamentos?data=2026-05-10&situacao=PAGO"))
+    void deveAceitarParametrosDeFiltroNaListagem() throws Exception 
+    {
+        mockMvc.perform(get("/lancamentos?dataInicio=2026-05-10&situacao=PAGO&tipo=RECEITA"))
                 .andExpect(status().isOk());
     }
 }

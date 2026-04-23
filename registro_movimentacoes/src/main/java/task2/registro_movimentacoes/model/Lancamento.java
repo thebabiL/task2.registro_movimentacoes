@@ -3,6 +3,7 @@ package task2.registro_movimentacoes.model;
 import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.annotation.Transient;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -24,4 +25,7 @@ public class Lancamento
 
     private TipoLancamento tipo;
     private SituacaoLancamento situacao;
+
+    @Transient // notação faz o MongoDB ignorar este campo ao salvar
+    private String emailDestino;
 }

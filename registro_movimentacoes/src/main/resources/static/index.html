@@ -2,7 +2,9 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>Controle Financeiro</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Financeiro</title>
+    <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
@@ -12,65 +14,104 @@
         }
     </script>
 
-    <h1>Lançamentos</h1>
+    <div class="sidebar">
+        <h2 class="titulo-sistema">Controle Financeiro</h2>
+        
+        <label>Data Início</label>
+        <input type="date" id="filtroDataInicio">
+        
+        <label>Data Fim</label>
+        <input type="date" id="filtroDataFim">
+        
+        <label>Situação</label>
+        <select id="filtroSituacao">
+            <option value="">Todas as Situações</option>
+            <option value="PENDENTE">Pendente</option>
+            <option value="PAGO">Pago</option>
+        </select>
 
-    <button onclick="logout()">Sair</button>
+        <label>Tipo</label>
+        <select id="filtroTipo">
+            <option value="">Todos os Tipos</option>
+            <option value="RECEITA">Receita</option>
+            <option value="DESPESA">Despesa</option>
+        </select>
 
-    <hr>
+        <button onclick="filtrar()">Aplicar Filtros</button>
+        <button class="outline" style="color: white; border-color: #475569;" onclick="limparFiltros()">Limpar Filtros</button>
+        
+        <div style="margin-top: auto;">
+            <button class="danger" onclick="exportarPDF()">📄 Exportar PDF</button>
+        </div>
+    </div>
 
-    <h2>Filtros e Relatório</h2>
-    
-    <label>Data:</label>
-    <input type="date" id="filtroData">
-    
-    <label>Situação:</label>
-    <select id="filtroSituacao">
-        <option value="">Todas</option>
-        <option value="PENDENTE">Pendente</option>
-        <option value="PAGO">Pago</option>
-    </select>
+    <div class="main-content">
+        
+        <div class="top-bar">
+            <button class="outline" onclick="logout()">Sair do Sistema</button>
+        </div>
 
-    <button onclick="filtrar()">Filtrar</button>
-    <button onclick="limparFiltros()">Limpar Filtros</button>
-    <button onclick="exportarPDF()" style="background-color: #d32f2f; color: white; border: none; padding: 3px 8px; cursor: pointer; margin-left: 10px;">Exportar para PDF</button>
+        <div class="card">
+            <h3>Novo Lançamento</h3>
+            <div class="form-row">
+                <div class="form-group" style="flex: 2;">
+                    <label>Descrição</label>
+                    <input id="descricao" placeholder="Ex: Mensalidade Internet">
+                </div>
+                <div class="form-group">
+                    <label>Valor (R$)</label>
+                    <input id="valor" type="number" placeholder="0.00">
+                </div>
+                <div class="form-group">
+                    <label>Data</label>
+                    <input type="date" id="dataLancamento">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>E-mail (Notificação)</label>
+                    <input id="emailDestino" type="email" placeholder="seuemail@exemplo.com">
+                </div>
+                <div class="form-group">
+                    <label>Tipo</label>
+                    <select id="tipo">
+                        <option value="RECEITA">Receita</option>
+                        <option value="DESPESA">Despesa</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Situação</label>
+                    <select id="situacao">
+                        <option value="PENDENTE">Pendente</option>
+                        <option value="PAGO">Pago</option>
+                    </select>
+                </div>
+            </div>
+            <div style="text-align: right;">
+                <button onclick="salvar()">Salvar Lançamento</button>
+            </div>
+        </div>
 
-    <hr>
+        <div class="card">
+            <h3>Histórico de Movimentações</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Descrição</th>
+                        <th>Data</th>
+                        <th>Valor</th>
+                        <th>Tipo</th>
+                        <th>Situação</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody id="tabela"></tbody>
+            </table>
+        </div>
 
-    <h2>Novo / Editar Lançamento</h2>
+    </div>
 
-    <input id="descricao" placeholder="Descrição">
-    <input id="valor" type="number" placeholder="Valor">
-
-    <select id="tipo">
-        <option value="CREDITO">Crédito</option>
-        <option value="DEBITO">Débito</option>
-    </select>
-
-    <select id="situacao">
-        <option value="PENDENTE">Pendente</option>
-        <option value="PAGO">Pago</option>
-    </select>
-
-    <button onclick="salvar()">Salvar</button>
-
-    <hr>
-
-    <h2>Lista</h2>
-
-    <table border="1">
-        <thead>
-            <tr>
-                <th>Descrição</th>
-                <th>Valor</th>
-                <th>Tipo</th>
-                <th>Situação</th>
-                <th>Ações</th>
-            </tr>
-        </thead>
-        <tbody id="tabela"></tbody>
-    </table>
-
-    <script src="js/app.js"></script>
+    <script src="js/app.js?v=4"></script>
 
 </body>
 </html>

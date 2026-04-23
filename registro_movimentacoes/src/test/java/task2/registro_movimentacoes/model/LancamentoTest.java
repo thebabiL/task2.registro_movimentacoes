@@ -1,28 +1,32 @@
 package task2.registro_movimentacoes.model;
 
 import org.junit.jupiter.api.Test;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import static org.junit.jupiter.api.Assertions.*;
 
-public class LancamentoTest {
+class LancamentoTest 
+{
 
     // Teste 1
     @Test
-    public void deveCriarLancamentoComValoresCorretos() {
+    void deveCriarLancamentoComValoresCorretos() 
+    {
         Lancamento lancamento = new Lancamento();
         lancamento.setDescricao("Conta de Luz");
         lancamento.setValor(new BigDecimal("150.00"));
-        lancamento.setTipo(TipoLancamento.DEBITO);
+        lancamento.setTipo(TipoLancamento.RECEITA);
         
         assertEquals("Conta de Luz", lancamento.getDescricao());
         assertEquals(new BigDecimal("150.00"), lancamento.getValor());
-        assertEquals(TipoLancamento.DEBITO, lancamento.getTipo());
+        assertEquals(TipoLancamento.RECEITA, lancamento.getTipo());
     }
 
     // Teste 2
     @Test
-    public void deveAlterarSituacaoDoLancamento() {
+    void deveAlterarSituacaoDoLancamento() 
+    {
         Lancamento lancamento = new Lancamento();
         lancamento.setSituacao(SituacaoLancamento.PENDENTE);
         
@@ -33,7 +37,8 @@ public class LancamentoTest {
 
     // Teste 3
     @Test
-    public void deveVerificarSeDataLancamentoNaoENulaAposSetar() {
+    void deveVerificarSeDataLancamentoNaoENulaAposSetar() 
+    {
         Lancamento lancamento = new Lancamento();
         LocalDate hoje = LocalDate.now();
         

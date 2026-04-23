@@ -1,19 +1,19 @@
 package task2.registro_movimentacoes.service;
 
+import jakarta.mail.internet.MimeMessage;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-public class EmailServiceTest {
+class EmailServiceTest 
+{
 
     @Mock
     private JavaMailSender mailSender;
@@ -21,22 +21,28 @@ public class EmailServiceTest {
     @InjectMocks
     private EmailService emailService;
 
-    // Teste 12
+    // Teste 12 - 
     @Test
-    public void deveDispararEnvioDeEmail() {
-        emailService.enviarEmailNotificacao("Assunto", "Texto");
-        verify(mailSender, times(1)).send(any(SimpleMailMessage.class));
+    void deveDispararEnvioDeEmail() 
+    {
+        MimeMessage mimeMessage = mock(MimeMessage.class);
+        when(mailSender.createMimeMessage()).thenReturn(mimeMessage);
+
+        emailService.enviarEmailNotificacaoHtml("teste@teste.com", "Assunto", "<h1>Texto</h1>");
+        
+        verify(mailSender, times(1)).send(mimeMessage);
     }
     
-    // Teste 13
-    @Test
-    public void naoDeveQuebrarSeDerErroNoEnvio() {
-        // Simulando que o envio dá erro
-        org.mockito.Mockito.doThrow(new RuntimeException("Erro SMTP")).when(mailSender).send(any(SimpleMailMessage.class));
+    // Teste 13 
+    void naoDeveQuebrarSeDerErroNoEnvio() 
+    {
+        MimeMessage mimeMessage = mock(MimeMessage.class);
+        when(mailSender.createMimeMessage()).thenReturn(mimeMessage);
         
-        // O método no EmailService tem um try-catch, então não deve jogar a exception para cima
-        emailService.enviarEmailNotificacao("Assunto", "Texto");
+        doThrow(new RuntimeException("Erro SMTP")).when(mailSender).send(any(MimeMessage.class));
         
-        verify(mailSender, times(1)).send(any(SimpleMailMessage.class));
+        emailService.enviarEmailNotificacaoHtml("teste@teste.com", "Assunto", "<h1>Texto</h1>");
+        
+        verify(mailSender, times(1)).send(any(MimeMessage.class));
     }
 }

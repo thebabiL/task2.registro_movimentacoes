@@ -6,6 +6,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+
 import task2.registro_movimentacoes.model.Usuario;
 import task2.registro_movimentacoes.repository.UsuarioRepository;
 
@@ -18,7 +19,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
 @WebMvcTest(UsuarioController.class)
-public class UsuarioControllerTest {
+class UsuarioControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -28,7 +29,8 @@ public class UsuarioControllerTest {
 
     // Teste 14
     @Test
-    public void deveRetornarSucessoNoLoginQuandoUsuarioExiste() throws Exception {
+    void deveRetornarSucessoNoLoginQuandoUsuarioExiste() throws Exception 
+    {
         Usuario mockUser = new Usuario();
         mockUser.setLogin("admin");
         mockUser.setSenha("admin");
@@ -47,7 +49,8 @@ public class UsuarioControllerTest {
 
     // Teste 15
     @Test
-    public void deveRetornarNaoAutorizadoQuandoLoginFalha() throws Exception {
+    void deveRetornarNaoAutorizadoQuandoLoginFalha() throws Exception 
+    {
         when(repository.findByLoginAndSenha(anyString(), anyString())).thenReturn(Optional.empty());
 
         String jsonRequest = "{\"login\":\"errado\", \"senha\":\"errado\"}";
@@ -60,7 +63,8 @@ public class UsuarioControllerTest {
 
     // Teste 16
     @Test
-    public void deveRetornarBadRequestSeEnviarJsonVazio() throws Exception {
+    void deveRetornarBadRequestSeEnviarJsonVazio() throws Exception 
+    {
         mockMvc.perform(post("/usuarios/login")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(""))

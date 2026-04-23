@@ -30,11 +30,11 @@ public class UsuarioController
         );
 
         if (user.isPresent()) 
-          {
+        {
             return ResponseEntity.ok(user.get());
         } 
         else 
-          {
+        {
             return ResponseEntity.status(401).build();
         }
     }

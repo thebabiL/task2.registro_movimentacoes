@@ -1,30 +1,44 @@
 package task2.registro_movimentacoes.service;
 
-import org.springframework.mail.SimpleMailMessage;
+import jakarta.mail.internet.MimeMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
 @Service
-public class EmailService {
+public class EmailService 
+{
 
     private final JavaMailSender mailSender;
 
-    public EmailService(JavaMailSender mailSender) {
+    public EmailService(JavaMailSender mailSender) 
+    {
         this.mailSender = mailSender;
     }
 
-    public void enviarEmailNotificacao(String assunto, String texto) {
-        SimpleMailMessage message = new SimpleMailMessage();
-        // Coloque o e-mail do "cliente" ou administrador que vai receber os avisos
-        message.setTo("barbara.leidemer@univates.br"); 
-        message.setSubject(assunto);
-        message.setText(texto);
-        
-        try {
+    public void enviarEmailNotificacaoHtml(String destinatario, String assunto, String htmlTexto) 
+    {
+        if (destinatario == null || destinatario.trim().isEmpty()) 
+        {
+            System.out.println("Nenhum e-mail de destino informado. Notificação ignorada.");
+            return;
+        }
+
+        try 
+        {
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+            
+            helper.setTo(destinatario);
+            helper.setSubject(assunto);
+            helper.setText(htmlTexto, true); 
+            
             mailSender.send(message);
-            System.out.println("E-mail enviado com sucesso!");
-        } catch (Exception e) {
-            System.err.println("Erro ao enviar e-mail: " + e.getMessage());
+            System.out.println("E-mail HTML enviado com sucesso para: " + destinatario);
+        } 
+        catch (Exception e) 
+        {
+            System.err.println("Erro ao enviar e-mail HTML: " + e.getMessage());
         }
     }
 }

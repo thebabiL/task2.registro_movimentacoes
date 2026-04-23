@@ -30,32 +30,41 @@ public class LancamentoController
         return service.salvar(lancamento);
     }
 
-@GetMapping
+    @GetMapping
     public List<Lancamento> listar(
-            @RequestParam(required = false) String data,
-            @RequestParam(required = false) String situacao) {
-        
-        // Se mandou os dois filtros
-        if (data != null && !data.isEmpty() && situacao != null && !situacao.isEmpty()) {
-            return service.listarTodos().stream()
-                    .filter(l -> l.getDataLancamento().toString().equals(data) && l.getSituacao().name().equals(situacao))
+            @RequestParam(required = false) String dataInicio,
+            @RequestParam(required = false) String dataFim,
+            @RequestParam(required = false) String situacao,
+            @RequestParam(required = false) String tipo) 
+    { 
+
+        List<Lancamento> lancamentos = service.listarTodos();
+
+        if (dataInicio != null && !dataInicio.isEmpty() && dataFim != null && !dataFim.isEmpty()) 
+        {
+            java.time.LocalDate inicio = java.time.LocalDate.parse(dataInicio);
+            java.time.LocalDate fim = java.time.LocalDate.parse(dataFim);
+
+            lancamentos = lancamentos.stream()
+                    .filter(l -> l.getDataLancamento() != null && !l.getDataLancamento().isBefore(inicio) && !l.getDataLancamento().isAfter(fim))
                     .toList();
         }
-        // Se mandou só a data
-        else if (data != null && !data.isEmpty()) {
-            return service.listarTodos().stream()
-                    .filter(l -> l.getDataLancamento().toString().equals(data))
-                    .toList();
-        }
-        // Se mandou só a situação
-        else if (situacao != null && !situacao.isEmpty()) {
-            return service.listarTodos().stream()
+
+        if (situacao != null && !situacao.isEmpty()) 
+        {
+            lancamentos = lancamentos.stream()
                     .filter(l -> l.getSituacao().name().equals(situacao))
                     .toList();
         }
-        
-        // Se não mandou nada, lista tudo
-        return service.listarTodos();
+
+        if (tipo != null && !tipo.isEmpty()) 
+        {
+            lancamentos = lancamentos.stream()
+                    .filter(l -> l.getTipo().name().equals(tipo))
+                    .toList();
+        }
+
+        return lancamentos;
     }
 
     @PutMapping("/{id}")
@@ -71,8 +80,39 @@ public class LancamentoController
     }
 
     @GetMapping("/exportar-pdf")
-    public ResponseEntity<byte[]> exportarPDF() {
+    public ResponseEntity<byte[]> exportarPDF(
+            @RequestParam(required = false) String dataInicio,
+            @RequestParam(required = false) String dataFim,
+            @RequestParam(required = false) String situacao,
+            @RequestParam(required = false) String tipo) 
+        { 
+
         List<Lancamento> lancamentos = service.listarTodos();
+
+        if (dataInicio != null && !dataInicio.isEmpty() && dataFim != null && !dataFim.isEmpty()) 
+        {
+            java.time.LocalDate inicio = java.time.LocalDate.parse(dataInicio);
+            java.time.LocalDate fim = java.time.LocalDate.parse(dataFim);
+
+            lancamentos = lancamentos.stream()
+                    .filter(l -> l.getDataLancamento() != null && !l.getDataLancamento().isBefore(inicio) && !l.getDataLancamento().isAfter(fim))
+                    .toList();
+        }
+
+        if (situacao != null && !situacao.isEmpty()) 
+        {
+            lancamentos = lancamentos.stream()
+                    .filter(l -> l.getSituacao().name().equals(situacao))
+                    .toList();
+        }
+
+        if (tipo != null && !tipo.isEmpty()) 
+        {
+            lancamentos = lancamentos.stream()
+                    .filter(l -> l.getTipo().name().equals(tipo))
+                    .toList();
+        }
+
         byte[] pdf = pdfService.gerarRelatorioLancamentos(lancamentos);
 
         return ResponseEntity.ok()

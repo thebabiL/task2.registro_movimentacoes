@@ -1,13 +1,16 @@
 package task2.registro_movimentacoes.model;
 
 import org.junit.jupiter.api.Test;
+
 import static org.junit.jupiter.api.Assertions.*;
 
-public class UsuarioTest {
+class UsuarioTest 
+{
 
     // Teste 4
     @Test
-    public void deveCriarUsuarioAtivoComBuilder() {
+    void deveCriarUsuarioAtivoComBuilder() 
+    {
         Usuario usuario = Usuario.builder()
                 .nome("Teste")
                 .login("teste123")
@@ -20,7 +23,8 @@ public class UsuarioTest {
 
     // Teste 5
     @Test
-    public void deveAlterarSenhaDoUsuario() {
+    void deveAlterarSenhaDoUsuario() 
+    {
         Usuario usuario = new Usuario();
         usuario.setSenha("senhaVelha");
         

@@ -1,0 +1,184 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+:root {
+    --primary: #4f46e5; /* Azul Indigo vibrante */
+    --primary-hover: #4338ca;
+    --danger: #ef4444;
+    --danger-hover: #dc2626;
+    --bg-main: #f3f4f6; /* Fundo cinza bem claro */
+    --sidebar-bg: #1e293b; /* Fundo da barra lateral escuro */
+    --card-bg: #ffffff;
+    --text-dark: #1f2937;
+    --text-light: #f8fafc;
+    --border: #e5e7eb;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: var(--bg-main);
+    color: var(--text-dark);
+    display: flex;
+    min-height: 100vh;
+}
+
+/* TELA DE LOGIN */
+body.login-screen {
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(135deg, var(--primary) 0%, #312e81 100%);
+}
+
+.login-card {
+    background: var(--card-bg);
+    padding: 40px;
+    border-radius: 16px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    width: 100%;
+    max-width: 400px;
+    text-align: center;
+}
+
+.login-card h2 { margin-top: 0; color: var(--primary); }
+.login-card input { width: 90%; margin-bottom: 20px; }
+.login-card button { width: 100%; margin-top: 10px; }
+
+/* SISTEMA INTERNO */
+
+/* Barra Lateral (Esquerda Fixa) */
+.sidebar {
+    width: 280px;
+    background-color: var(--sidebar-bg);
+    color: var(--text-light);
+    position: fixed;
+    height: 100vh;
+    padding: 30px 20px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 4px 0 10px rgba(0,0,0,0.1);
+}
+
+.sidebar h2.titulo-sistema {
+    text-align: center; 
+    font-size: 1.4rem;
+    margin-top: 0;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #334155;
+    margin-bottom: 30px;
+}
+
+.sidebar label {
+    font-size: 0.85rem;
+    color: #94a3b8;
+    margin-bottom: 5px;
+    display: block;
+}
+
+.sidebar input, .sidebar select {
+    width: 100%;
+    box-sizing: border-box;
+    margin-bottom: 20px;
+    background-color: #334155;
+    color: white;
+    border: 1px solid #475569;
+}
+
+.sidebar button {
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+/* Área Principal (Direita) */
+.main-content {
+    margin-left: 280px; 
+    padding: 40px;
+    width: calc(100% - 280px);
+    box-sizing: border-box;
+}
+
+.top-bar {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 30px;
+}
+
+/* Cartões Brancos */
+.card {
+    background: var(--card-bg);
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    margin-bottom: 30px;
+}
+
+.card h3 { margin-top: 0; border-bottom: 2px solid var(--bg-main); padding-bottom: 10px;}
+
+/* Inputs e Formulários Padrão */
+.form-row {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+}
+
+.form-group {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-width: 180px;
+}
+
+label { font-weight: 500; margin-bottom: 8px; font-size: 0.9rem;}
+input, select {
+    padding: 12px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-family: 'Poppins', sans-serif;
+    outline: none;
+}
+input:focus, select:focus { border-color: var(--primary); }
+
+/* Botões */
+button {
+    background-color: var(--primary);
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: 'Poppins', sans-serif;
+    transition: 0.3s;
+}
+button:hover { background-color: var(--primary-hover); transform: translateY(-1px); }
+button.danger { background-color: var(--danger); }
+button.danger:hover { background-color: var(--danger-hover); }
+button.outline { background-color: transparent; border: 1px solid var(--primary); color: var(--primary); }
+button.outline:hover { background-color: var(--primary); color: white; }
+
+/* Tabela (Espaçada e Centralizada) */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 0 auto; 
+}
+
+th, td {
+    padding: 18px 15px; 
+    text-align: center; 
+    border-bottom: 1px solid var(--border);
+}
+
+th {
+    background-color: var(--bg-main);
+    color: #4b5563;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    letter-spacing: 0.05em;
+}
+
+tr:hover { background-color: #f8fafc; }
+
+.acoes-btn button { padding: 6px 12px; font-size: 0.8rem; margin: 0 4px; }

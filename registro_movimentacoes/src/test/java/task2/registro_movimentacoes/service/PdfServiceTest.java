@@ -13,11 +13,13 @@ import java.util.Collections;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-public class PdfServiceTest {
+class PdfServiceTest 
+{
 
     // Teste 10
     @Test
-    public void deveGerarPdfComListaVazia() {
+    void deveGerarPdfComListaVazia() 
+    {
         PdfService pdfService = new PdfService();
         byte[] pdf = pdfService.gerarRelatorioLancamentos(Collections.emptyList());
         
@@ -27,13 +29,14 @@ public class PdfServiceTest {
 
     // Teste 11
     @Test
-    public void deveGerarPdfComDados() {
+    void deveGerarPdfComDados() 
+    {
         PdfService pdfService = new PdfService();
-        Lancamento l = new Lancamento("1", "Teste", LocalDate.now(), BigDecimal.TEN, TipoLancamento.CREDITO, SituacaoLancamento.PAGO);
+        Lancamento l = new Lancamento("1", "Teste", LocalDate.now(), BigDecimal.TEN, TipoLancamento.CREDITO, SituacaoLancamento.PAGO, null);
         
         byte[] pdf = pdfService.gerarRelatorioLancamentos(Arrays.asList(l));
         
         assertNotNull(pdf);
-        assertTrue(pdf.length > 100); // O PDF deve ter um tamanho razoável
+        assertTrue(pdf.length > 100); 
     }
 }

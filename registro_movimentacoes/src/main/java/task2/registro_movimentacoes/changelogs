@@ -1,0 +1,26 @@
+package task2.registro_movimentacoes.changelogs;
+
+import io.mongock.api.annotations.ChangeUnit;
+import io.mongock.api.annotations.Execution;
+import io.mongock.api.annotations.RollbackExecution;
+import org.springframework.data.mongodb.core.MongoTemplate;
+
+@ChangeUnit(id = "carga-inicial-banco", order = "001", author = "seu-nome")
+public class DatabaseChangelog001 
+{
+
+    @Execution
+    public void execution(MongoTemplate mongoTemplate)
+    {
+        if (!mongoTemplate.collectionExists("lancamentos")) 
+        {
+            mongoTemplate.createCollection("lancamentos");
+        }
+    }
+
+    @RollbackExecution
+    public void rollbackExecution(MongoTemplate mongoTemplate) 
+    {
+        mongoTemplate.dropCollection("lancamentos");
+    }
+}

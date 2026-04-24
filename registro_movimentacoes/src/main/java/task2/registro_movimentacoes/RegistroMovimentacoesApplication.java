@@ -5,7 +5,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import io.mongock.runner.springboot.EnableMongock;
 
-@EnableMongock
 @SpringBootApplication
 public class RegistroMovimentacoesApplication 
 {

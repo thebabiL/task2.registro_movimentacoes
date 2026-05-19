@@ -1,0 +1,124 @@
+pipeline {
+    agent any
+
+    environment {
+        APP_NAME = 'registro_movimentacoes'
+        IMAGE_NAME = "registro_movimentacoes:${env.BUILD_NUMBER}"
+        VM_HOST = '177.44.248.51'
+        VM_USER = 'univates'
+        VM_BASE_DIR = '/opt/registro-movimentacoes'
+        MAIL_HOST = 'smtp.gmail.com'
+        MAIL_PORT = '587'
+        MAIL_USERNAME = 'barbara.leidemer@universo.univates.br'
+        MAIL_PASSWORD = 'xqqmjlkllwdmmzfy'
+        JAVA_OPTS = '-Xms128m -Xmx256m'
+    }
+
+    options {
+        timestamps()
+        buildDiscarder(logRotator(numToKeepStr: '10'))
+        disableConcurrentBuilds()
+    }
+
+    stages {
+        stage('Registro de mudanca') {
+            steps {
+                echo 'Mostra o ultimo commit e o estado do repositorio para evidenciar o registro de mudanca.'
+                sh 'git log -1 --pretty=format:"Commit: %h%nAutor: %an%nData: %ad%nMensagem: %s"'
+                sh 'git status --short'
+            }
+        }
+
+        stage('Preparar Maven') {
+            steps {
+                echo 'Garante permissao de execucao para Maven Wrapper e scripts shell.'
+                sh 'chmod +x mvnw scripts/*.sh deploy/*.sh'
+                sh './mvnw -version'
+            }
+        }
+
+        stage('Testes automatizados') {
+            steps {
+                echo 'Executa testes automatizados, gera relatorios Surefire/JUnit e cobertura Jacoco.'
+                sh './mvnw -B clean test'
+                sh './scripts/validate-test-count.sh 20'
+            }
+            post {
+                always {
+                    junit 'target/surefire-reports/*.xml'
+                    archiveArtifacts artifacts: 'target/site/jacoco/**,target/surefire-reports/**', allowEmptyArchive: true
+                }
+            }
+        }
+
+        stage('Qualidade de codigo') {
+            steps {
+                echo 'Executa Checkstyle para analise simples de qualidade de codigo.'
+                sh './mvnw -B checkstyle:checkstyle'
+            }
+            post {
+                always {
+                    archiveArtifacts artifacts: 'target/site/checkstyle.html,target/checkstyle-result.xml', allowEmptyArchive: true
+                    recordIssues enabledForFailure: true, tools: [checkStyle(pattern: 'target/checkstyle-result.xml')]
+                }
+            }
+        }
+
+        stage('Build Maven') {
+            steps {
+                echo 'Gera o arquivo JAR da aplicacao Spring Boot.'
+                sh './mvnw -B -DskipTests package'
+                archiveArtifacts artifacts: 'target/*.jar', fingerprint: true
+            }
+        }
+
+        stage('Build Docker') {
+            steps {
+                echo 'Cria a imagem Docker e salva um arquivo .tar para enviar para a VM via SSH.'
+                sh 'docker build -t ${IMAGE_NAME} .'
+                sh 'mkdir -p target && docker save ${IMAGE_NAME} -o target/app-image.tar'
+                archiveArtifacts artifacts: 'target/app-image.tar', fingerprint: true
+            }
+        }
+
+        stage('Deploy Integracao') {
+            steps {
+                echo 'Sobe o ambiente de integracao no proprio servidor Jenkins, porta externa 8081.'
+                sh 'IMAGE_NAME=${IMAGE_NAME} MAIL_HOST=${MAIL_HOST} MAIL_PORT=${MAIL_PORT} MAIL_USERNAME=${MAIL_USERNAME} MAIL_PASSWORD=${MAIL_PASSWORD} JAVA_OPTS="${JAVA_OPTS}" docker compose -f docker-compose.integration.yml up -d'
+                sh 'docker compose -f docker-compose.integration.yml ps'
+            }
+        }
+
+        stage('Deploy Homologacao') {
+            steps {
+                input message: 'Aprovar deploy em homologacao?', ok: 'Deploy homologacao'
+                echo 'Envia a imagem Docker para a VM e atualiza homologacao em http://177.44.248.51:8082.'
+                sshagent(credentials: ['vm-ssh-key']) {
+                    sh './deploy/deploy.sh homolog ${IMAGE_NAME}'
+                }
+            }
+        }
+
+        stage('Deploy Producao') {
+            steps {
+                input message: 'Aprovar deploy em producao?', ok: 'Deploy producao'
+                echo 'Envia a imagem Docker para a VM e atualiza producao em http://177.44.248.51:8080.'
+                sshagent(credentials: ['vm-ssh-key']) {
+                    sh './deploy/deploy.sh production ${IMAGE_NAME}'
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            sh 'docker compose -f docker-compose.integration.yml ps || true'
+        }
+        success {
+            echo 'Pipeline concluido com sucesso.'
+        }
+        failure {
+            echo 'Pipeline falhou. Verifique testes, Checkstyle, Docker ou SSH.'
+        }
+    }
+}

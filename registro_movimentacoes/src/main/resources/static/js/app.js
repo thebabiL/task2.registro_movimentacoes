@@ -1,4 +1,4 @@
-const API = "http://177.44.248.51:8081/lancamentos";
+const API = "/lancamentos";
 let editandoId = null;
 
 // 1. Atualizado: Adicionado o parâmetro tipoFiltro

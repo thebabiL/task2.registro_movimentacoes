@@ -11,7 +11,7 @@ function logar() {
         return;
     }
 
-    fetch("http://177.44.248.51:8081/usuarios/login", 
+    fetch("/usuarios/login",
       {
         method: "POST",
         headers: {"Content-Type": "application/json"},

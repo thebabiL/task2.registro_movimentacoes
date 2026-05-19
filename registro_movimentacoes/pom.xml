@@ -16,7 +16,7 @@
     </parent>
 
     <properties>
-        <java.version>23</java.version>
+        <java.version>21</java.version>
     </properties>
 
     <dependencies>
@@ -86,6 +86,20 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
 
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-checkstyle-plugin</artifactId>
+                <version>3.4.0</version>
+                <configuration>
+                    <configLocation>config/checkstyle.xml</configLocation>
+                    <outputFile>target/checkstyle-result.xml</outputFile>
+                    <outputFileFormat>xml</outputFileFormat>
+                    <consoleOutput>true</consoleOutput>
+                    <failsOnError>false</failsOnError>
+                    <failOnViolation>false</failOnViolation>
+                </configuration>
+            </plugin>
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>

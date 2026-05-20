@@ -3,15 +3,10 @@ pipeline {
 
     environment {
         PROJECT_DIR = 'registro_movimentacoes'
-        APP_NAME = 'registro_movimentacoes'
         IMAGE_NAME = "registro_movimentacoes:${env.BUILD_NUMBER}"
         VM_HOST = '177.44.248.51'
         VM_USER = 'univates'
         VM_BASE_DIR = '/opt/registro-movimentacoes'
-        MAIL_HOST = 'smtp.gmail.com'
-        MAIL_PORT = '587'
-        MAIL_USERNAME = 'barbara.leidemer@universo.univates.br'
-        MAIL_PASSWORD = 'xqqmjlkllwdmmzfy'
         JAVA_OPTS = '-Xms128m -Xmx256m'
         SSH_KEY_FILE = '/var/jenkins_home/.ssh/jenkins_univates'
     }
@@ -103,7 +98,7 @@ pipeline {
                 dir(env.PROJECT_DIR) {
                     sh 'docker compose -f docker-compose.integration.yml down --remove-orphans || true'
                     sh 'docker ps --format "table {{.Names}}\\t{{.Image}}\\t{{.Ports}}" | grep ":8081->" || true'
-                    sh 'IMAGE_NAME=${IMAGE_NAME} MAIL_HOST=${MAIL_HOST} MAIL_PORT=${MAIL_PORT} MAIL_USERNAME=${MAIL_USERNAME} MAIL_PASSWORD=${MAIL_PASSWORD} JAVA_OPTS="${JAVA_OPTS}" docker compose -f docker-compose.integration.yml up -d'
+                    sh 'IMAGE_NAME=${IMAGE_NAME} JAVA_OPTS="${JAVA_OPTS}" docker compose -f docker-compose.integration.yml up -d'
                     sh 'docker compose -f docker-compose.integration.yml ps'
                 }
             }

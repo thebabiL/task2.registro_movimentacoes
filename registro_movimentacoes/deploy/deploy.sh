@@ -12,10 +12,6 @@ esac
 : "${VM_HOST:=177.44.248.51}"
 : "${VM_USER:=univates}"
 : "${VM_BASE_DIR:=/opt/registro-movimentacoes}"
-: "${MAIL_HOST:=smtp.gmail.com}"
-: "${MAIL_PORT:=587}"
-: "${MAIL_USERNAME:=barbara.leidemer@universo.univates.br}"
-: "${MAIL_PASSWORD:=xqqmjlkllwdmmzfy}"
 : "${JAVA_OPTS:=-Xms128m -Xmx256m}"
 : "${SSH_KEY_FILE:=}"
 
@@ -51,10 +47,6 @@ echo "Gerando arquivo .env remoto"
 ssh "${SSH_OPTIONS[@]}" "${SSH_TARGET}" "cat > '${REMOTE_DIR}/.env'" <<EOF
 IMAGE_NAME=${IMAGE_NAME}
 APP_ENV=${ENVIRONMENT}
-MAIL_HOST=${MAIL_HOST}
-MAIL_PORT=${MAIL_PORT}
-MAIL_USERNAME=${MAIL_USERNAME}
-MAIL_PASSWORD=${MAIL_PASSWORD}
 JAVA_OPTS=${JAVA_OPTS}
 EOF
 

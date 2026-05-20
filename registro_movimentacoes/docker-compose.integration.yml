@@ -22,10 +22,6 @@ services:
     environment:
       SERVER_PORT: 8080
       SPRING_DATA_MONGODB_URI: mongodb://mongo:27017/controle_financeiro_int
-      MAIL_HOST: ${MAIL_HOST:-smtp.gmail.com}
-      MAIL_PORT: ${MAIL_PORT:-587}
-      MAIL_USERNAME: ${MAIL_USERNAME:-barbara.leidemer@universo.univates.br}
-      MAIL_PASSWORD: ${MAIL_PASSWORD:-xqqmjlkllwdmmzfy}
       JAVA_OPTS: ${JAVA_OPTS:--Xms128m -Xmx256m}
     ports:
       - "8081:8080"

@@ -245,10 +245,16 @@ SCM: Git
 Repository URL: https://github.com/thebabiL/task2.registro_movimentacoes.git
 Credentials: - none -
 Branch Specifier: */main
-Script Path: Jenkinsfile
+Script Path: registro_movimentacoes/Jenkinsfile
 ```
 
 Clique em `Save`.
+
+Importante: o reposititorio tem a pasta `registro_movimentacoes` na raiz. Por isso o Jenkinsfile nao fica em `/Jenkinsfile`, e sim em:
+
+```text
+registro_movimentacoes/Jenkinsfile
+```
 
 ## PASSO 6 - Executar primeira vez
 

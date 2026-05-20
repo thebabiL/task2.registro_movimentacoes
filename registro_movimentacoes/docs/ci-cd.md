@@ -55,7 +55,7 @@ Pipeline:
 
 1. Criar job do tipo Multibranch Pipeline ou Pipeline from SCM.
 2. Apontar para o repositorio GitHub.
-3. Usar o arquivo `Jenkinsfile` da raiz do projeto.
+3. Usar o script path `registro_movimentacoes/Jenkinsfile`.
 4. Garantir que o agente Jenkins tenha Java 21, Maven ou `mvnw`, Docker e Docker Compose.
 
 ## Preparacao da VM Linux

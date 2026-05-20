@@ -17,13 +17,18 @@ esac
 : "${MAIL_USERNAME:=barbara.leidemer@universo.univates.br}"
 : "${MAIL_PASSWORD:=xqqmjlkllwdmmzfy}"
 : "${JAVA_OPTS:=-Xms128m -Xmx256m}"
+: "${SSH_KEY_FILE:=}"
 
 LOCAL_COMPOSE="docker-compose.${ENVIRONMENT}.yml"
 REMOTE_DIR="${VM_BASE_DIR}/${ENVIRONMENT}"
 PROJECT_NAME="registro_${ENVIRONMENT}"
 IMAGE_TAR="target/app-image.tar"
 SSH_TARGET="${VM_USER}@${VM_HOST}"
-SSH_OPTIONS="-o StrictHostKeyChecking=accept-new"
+SSH_OPTIONS=(-o StrictHostKeyChecking=accept-new)
+
+if [ -n "$SSH_KEY_FILE" ]; then
+  SSH_OPTIONS+=(-i "$SSH_KEY_FILE")
+fi
 
 if [ ! -f "$LOCAL_COMPOSE" ]; then
   echo "Arquivo nao encontrado: $LOCAL_COMPOSE"
@@ -36,14 +41,14 @@ if [ ! -f "$IMAGE_TAR" ]; then
 fi
 
 echo "Criando diretorio remoto ${REMOTE_DIR}"
-ssh ${SSH_OPTIONS} "${SSH_TARGET}" "mkdir -p '${REMOTE_DIR}'"
+ssh "${SSH_OPTIONS[@]}" "${SSH_TARGET}" "mkdir -p '${REMOTE_DIR}'"
 
 echo "Enviando compose e imagem para a VM"
-scp ${SSH_OPTIONS} "$LOCAL_COMPOSE" "${SSH_TARGET}:${REMOTE_DIR}/docker-compose.yml"
-scp ${SSH_OPTIONS} "$IMAGE_TAR" "${SSH_TARGET}:${REMOTE_DIR}/app-image.tar"
+scp "${SSH_OPTIONS[@]}" "$LOCAL_COMPOSE" "${SSH_TARGET}:${REMOTE_DIR}/docker-compose.yml"
+scp "${SSH_OPTIONS[@]}" "$IMAGE_TAR" "${SSH_TARGET}:${REMOTE_DIR}/app-image.tar"
 
 echo "Gerando arquivo .env remoto"
-ssh ${SSH_OPTIONS} "${SSH_TARGET}" "cat > '${REMOTE_DIR}/.env'" <<EOF
+ssh "${SSH_OPTIONS[@]}" "${SSH_TARGET}" "cat > '${REMOTE_DIR}/.env'" <<EOF
 IMAGE_NAME=${IMAGE_NAME}
 APP_ENV=${ENVIRONMENT}
 MAIL_HOST=${MAIL_HOST}
@@ -54,4 +59,4 @@ JAVA_OPTS=${JAVA_OPTS}
 EOF
 
 echo "Atualizando ambiente ${ENVIRONMENT}"
-ssh ${SSH_OPTIONS} "${SSH_TARGET}" "cd '${REMOTE_DIR}' && docker load -i app-image.tar && docker compose -p '${PROJECT_NAME}' --env-file .env -f docker-compose.yml up -d && docker compose -p '${PROJECT_NAME}' ps"
+ssh "${SSH_OPTIONS[@]}" "${SSH_TARGET}" "cd '${REMOTE_DIR}' && docker load -i app-image.tar && docker compose -p '${PROJECT_NAME}' --env-file .env -f docker-compose.yml up -d && docker compose -p '${PROJECT_NAME}' ps"

@@ -13,6 +13,7 @@ pipeline {
         MAIL_USERNAME = 'barbara.leidemer@universo.univates.br'
         MAIL_PASSWORD = 'xqqmjlkllwdmmzfy'
         JAVA_OPTS = '-Xms128m -Xmx256m'
+        SSH_KEY_FILE = '/var/jenkins_home/.ssh/jenkins_univates'
     }
 
     options {
@@ -100,6 +101,8 @@ pipeline {
             steps {
                 echo 'Sobe o ambiente de integracao no proprio servidor Jenkins, porta externa 8081.'
                 dir(env.PROJECT_DIR) {
+                    sh 'docker compose -f docker-compose.integration.yml down --remove-orphans || true'
+                    sh 'docker ps --format "table {{.Names}}\\t{{.Image}}\\t{{.Ports}}" | grep ":8081->" || true'
                     sh 'IMAGE_NAME=${IMAGE_NAME} MAIL_HOST=${MAIL_HOST} MAIL_PORT=${MAIL_PORT} MAIL_USERNAME=${MAIL_USERNAME} MAIL_PASSWORD=${MAIL_PASSWORD} JAVA_OPTS="${JAVA_OPTS}" docker compose -f docker-compose.integration.yml up -d'
                     sh 'docker compose -f docker-compose.integration.yml ps'
                 }
@@ -110,10 +113,8 @@ pipeline {
             steps {
                 input message: 'Aprovar deploy em homologacao?', ok: 'Deploy homologacao'
                 echo 'Envia a imagem Docker para a VM e atualiza homologacao em http://177.44.248.51:8082.'
-                sshagent(credentials: ['vm-ssh-key']) {
-                    dir(env.PROJECT_DIR) {
-                        sh './deploy/deploy.sh homolog ${IMAGE_NAME}'
-                    }
+                dir(env.PROJECT_DIR) {
+                    sh './deploy/deploy.sh homolog ${IMAGE_NAME}'
                 }
             }
         }
@@ -122,10 +123,8 @@ pipeline {
             steps {
                 input message: 'Aprovar deploy em producao?', ok: 'Deploy producao'
                 echo 'Envia a imagem Docker para a VM e atualiza producao em http://177.44.248.51:8080.'
-                sshagent(credentials: ['vm-ssh-key']) {
-                    dir(env.PROJECT_DIR) {
-                        sh './deploy/deploy.sh production ${IMAGE_NAME}'
-                    }
+                dir(env.PROJECT_DIR) {
+                    sh './deploy/deploy.sh production ${IMAGE_NAME}'
                 }
             }
         }

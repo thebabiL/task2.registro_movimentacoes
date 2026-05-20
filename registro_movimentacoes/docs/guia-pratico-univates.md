@@ -45,7 +45,7 @@ jenkins/Dockerfile
 jenkins/docker-compose.yml
 ```
 
-Os valores reais de VM, GitHub, portas e email ja foram aplicados nos arquivos. A unica informacao que nao fica no repositorio e a chave SSH privada do Jenkins, que voce gera no Windows e cadastra no Jenkins como `vm-ssh-key`.
+Os valores reais de VM, GitHub, portas e email ja foram aplicados nos arquivos. A chave SSH do deploy fica em arquivo dentro do container Jenkins, em `/var/jenkins_home/.ssh/jenkins_univates`.
 
 ## PASSO 1 - Comandos no Windows
 
@@ -53,30 +53,6 @@ Abra PowerShell no projeto:
 
 ```powershell
 cd C:\Users\barba\OneDrive\Documentos\task_2\registro_movimentacoes
-```
-
-Gere uma chave SSH para o Jenkins acessar a VM:
-
-```powershell
-ssh-keygen -t ed25519 -C "jenkins-univates" -f $env:USERPROFILE\.ssh\jenkins_univates
-```
-
-Copie a chave publica para a VM:
-
-```powershell
-type $env:USERPROFILE\.ssh\jenkins_univates.pub | ssh univates@177.44.248.51 "mkdir -p ~/.ssh && cat >> ~/.ssh/authorized_keys && chmod 700 ~/.ssh && chmod 600 ~/.ssh/authorized_keys"
-```
-
-Teste o SSH:
-
-```powershell
-ssh -i $env:USERPROFILE\.ssh\jenkins_univates univates@177.44.248.51 "hostname && whoami"
-```
-
-Copie a chave privada para cadastrar no Jenkins:
-
-```powershell
-Get-Content $env:USERPROFILE\.ssh\jenkins_univates
 ```
 
 Opcional: enviar a pasta do Jenkins para a VM:
@@ -196,35 +172,35 @@ SSH Agent
 Warnings Next Generation
 ```
 
-## PASSO 4 - Credenciais Jenkins
+## PASSO 4 - Chave SSH do Jenkins
 
-Menu:
+Gere a chave dentro do container Jenkins:
 
-```text
-Manage Jenkins > Credentials > System > Global credentials (unrestricted) > Add Credentials
+```bash
+docker exec -u root jenkins-registro bash -lc 'mkdir -p /var/jenkins_home/.ssh && chmod 700 /var/jenkins_home/.ssh && ssh-keygen -t ed25519 -N "" -C "jenkins-univates" -f /var/jenkins_home/.ssh/jenkins_univates -q && chmod 600 /var/jenkins_home/.ssh/jenkins_univates'
 ```
 
-Crie exatamente esta credencial obrigatoria:
+Autorize essa chave para o usuario `univates` da VM:
 
-| ID | Tipo | Valor |
-|---|---|---|
-| `vm-ssh-key` | SSH Username with private key | username `univates`, private key = conteudo de `C:\Users\barba\.ssh\jenkins_univates` |
+```bash
+mkdir -p ~/.ssh
+docker exec jenkins-registro cat /var/jenkins_home/.ssh/jenkins_univates.pub >> ~/.ssh/authorized_keys
+chmod 700 ~/.ssh
+chmod 600 ~/.ssh/authorized_keys
+```
+
+Teste o SSH de dentro do container Jenkins:
+
+```bash
+docker exec -u root jenkins-registro ssh -i /var/jenkins_home/.ssh/jenkins_univates -o StrictHostKeyChecking=accept-new univates@177.44.248.51 "hostname && whoami && docker ps"
+```
 
 O `Jenkinsfile` ja contem:
 
 ```text
+SSH_KEY_FILE=/var/jenkins_home/.ssh/jenkins_univates
 VM_HOST=177.44.248.51
 VM_USER=univates
-MAIL_HOST=smtp.gmail.com
-MAIL_PORT=587
-MAIL_USERNAME=barbara.leidemer@universo.univates.br
-MAIL_PASSWORD=xqqmjlkllwdmmzfy
-```
-
-Onde a credencial e usada:
-
-```text
-vm-ssh-key: Jenkinsfile, sshagent(credentials: ['vm-ssh-key'])
 ```
 
 ## PASSO 5 - Criar pipeline
@@ -454,15 +430,15 @@ user: root
 SSH denied:
 
 ```powershell
-ssh -i $env:USERPROFILE\.ssh\jenkins_univates univates@177.44.248.51
+docker exec -u root jenkins-registro ssh -i /var/jenkins_home/.ssh/jenkins_univates -o StrictHostKeyChecking=accept-new univates@177.44.248.51 "hostname && whoami"
 ```
 
-No Jenkins, confira:
+Confira:
 
 ```text
-Credential ID: vm-ssh-key
-Username: univates
-Private Key: chave privada, nao a .pub
+Arquivo da chave privada: /var/jenkins_home/.ssh/jenkins_univates
+Permissao da chave privada: 600
+Chave publica adicionada em: /home/univates/.ssh/authorized_keys
 ```
 
 Porta ocupada:
@@ -472,6 +448,27 @@ sudo lsof -i :8080
 sudo lsof -i :8081
 sudo lsof -i :8082
 docker ps
+```
+
+Se a integracao falhar com `failed to bind host port 0.0.0.0:8081`, descubra quem esta usando a porta:
+
+```bash
+sudo ss -ltnp | grep ':8081'
+docker ps --format "table {{.ID}}\t{{.Names}}\t{{.Image}}\t{{.Ports}}" | grep 8081
+```
+
+Se for um container antigo que pode ser removido:
+
+```bash
+docker stop NOME_OU_ID_DO_CONTAINER
+docker rm NOME_OU_ID_DO_CONTAINER
+```
+
+Se for a propria integracao quebrada de uma tentativa anterior:
+
+```bash
+cd /var/jenkins_home/workspace/registro-movimentacoes/registro_movimentacoes
+docker compose -f docker-compose.integration.yml down --remove-orphans
 ```
 
 Mongo nao conecta:

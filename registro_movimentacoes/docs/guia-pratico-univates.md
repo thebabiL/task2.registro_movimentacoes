@@ -464,6 +464,33 @@ docker stop NOME_OU_ID_DO_CONTAINER
 docker rm NOME_OU_ID_DO_CONTAINER
 ```
 
+Se a producao falhar com `failed to bind host port 0.0.0.0:8080`, provavelmente existe Tomcat ou outro Java da VM usando a porta. Verifique:
+
+```bash
+sudo ss -ltnp | grep ':8080'
+sudo systemctl status tomcat tomcat9 tomcat10 --no-pager
+```
+
+Se for Tomcat e ele nao for necessario para este trabalho:
+
+```bash
+sudo systemctl stop tomcat || true
+sudo systemctl stop tomcat9 || true
+sudo systemctl stop tomcat10 || true
+sudo systemctl disable tomcat || true
+sudo systemctl disable tomcat9 || true
+sudo systemctl disable tomcat10 || true
+```
+
+Depois limpe a tentativa de producao e suba de novo:
+
+```bash
+cd /opt/registro-movimentacoes/production
+docker compose -p registro_production --env-file .env -f docker-compose.yml down --remove-orphans
+docker compose -p registro_production --env-file .env -f docker-compose.yml up -d
+docker compose -p registro_production --env-file .env -f docker-compose.yml ps
+```
+
 Se for a propria integracao quebrada de uma tentativa anterior:
 
 ```bash

@@ -59,4 +59,4 @@ JAVA_OPTS=${JAVA_OPTS}
 EOF
 
 echo "Atualizando ambiente ${ENVIRONMENT}"
-ssh "${SSH_OPTIONS[@]}" "${SSH_TARGET}" "cd '${REMOTE_DIR}' && docker load -i app-image.tar && docker compose -p '${PROJECT_NAME}' --env-file .env -f docker-compose.yml up -d && docker compose -p '${PROJECT_NAME}' ps"
+ssh "${SSH_OPTIONS[@]}" "${SSH_TARGET}" "cd '${REMOTE_DIR}' && docker compose -p '${PROJECT_NAME}' --env-file .env -f docker-compose.yml down --remove-orphans || true && docker load -i app-image.tar && docker compose -p '${PROJECT_NAME}' --env-file .env -f docker-compose.yml up -d && docker compose -p '${PROJECT_NAME}' ps"

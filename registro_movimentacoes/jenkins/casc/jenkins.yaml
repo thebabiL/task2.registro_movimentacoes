@@ -1,0 +1,48 @@
+jenkins:
+  systemMessage: "Jenkins configurado automaticamente para o projeto Registro de Movimentacoes."
+  numExecutors: 2
+  mode: NORMAL
+
+  securityRealm:
+    local:
+      allowsSignup: false
+      users:
+        - id: "${JENKINS_ADMIN_ID}"
+          password: "${JENKINS_ADMIN_PASSWORD}"
+
+  authorizationStrategy:
+    loggedInUsersCanDoAnything:
+      allowAnonymousRead: false
+
+  crumbIssuer:
+    standard:
+      excludeClientIPFromCrumb: true
+
+  scmCheckoutRetryCount: 2
+
+unclassified:
+  location:
+    url: "http://177.44.248.51:8085/"
+
+jobs:
+  - script: |
+      pipelineJob('registro-movimentacoes') {
+        description('Pipeline CI/CD do projeto Registro de Movimentacoes')
+        triggers {
+          scm('H/2 * * * *')
+        }
+        definition {
+          cpsScm {
+            scm {
+              git {
+                remote {
+                  url('https://github.com/thebabiL/task2.registro_movimentacoes.git')
+                }
+                branch('*/main')
+              }
+            }
+            scriptPath('registro_movimentacoes/Jenkinsfile')
+            lightweight(true)
+          }
+        }
+      }

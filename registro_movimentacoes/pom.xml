@@ -96,8 +96,9 @@
                     <outputFile>target/checkstyle-result.xml</outputFile>
                     <outputFileFormat>xml</outputFileFormat>
                     <consoleOutput>true</consoleOutput>
-                    <failsOnError>false</failsOnError>
-                    <failOnViolation>false</failOnViolation>
+                    <failsOnError>true</failsOnError>
+                    <failOnViolation>true</failOnViolation>
+                    <violationSeverity>error</violationSeverity>
                 </configuration>
             </plugin>
             <plugin>

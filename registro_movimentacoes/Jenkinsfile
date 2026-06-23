@@ -56,9 +56,9 @@ pipeline {
 
         stage('Qualidade de codigo') {
             steps {
-                echo 'Executa Checkstyle para analise simples de qualidade de codigo.'
+                echo 'Executa Checkstyle e interrompe o pipeline caso existam violacoes de qualidade.'
                 dir(env.PROJECT_DIR) {
-                    sh './mvnw -B checkstyle:checkstyle'
+                    sh './mvnw -B checkstyle:checkstyle checkstyle:check'
                 }
             }
             post {

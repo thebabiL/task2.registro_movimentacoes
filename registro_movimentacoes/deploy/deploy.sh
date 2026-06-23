@@ -11,7 +11,7 @@ esac
 
 : "${VM_HOST:=177.44.248.51}"
 : "${VM_USER:=univates}"
-: "${VM_BASE_DIR:=/opt/registro-movimentacoes}"
+: "${VM_BASE_DIR:=/home/univates/registro-movimentacoes}"
 : "${JAVA_OPTS:=-Xms128m -Xmx256m}"
 : "${SSH_KEY_FILE:=}"
 

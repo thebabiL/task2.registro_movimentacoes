@@ -3,7 +3,7 @@ set -euo pipefail
 
 : "${VM_HOST:=177.44.248.51}"
 : "${VM_USER:=univates}"
-: "${VM_BASE_DIR:=/opt/registro-movimentacoes}"
+: "${VM_BASE_DIR:=/home/univates/registro-movimentacoes}"
 : "${SSH_KEY_FILE:=}"
 
 SSH_OPTIONS=(-o StrictHostKeyChecking=accept-new)

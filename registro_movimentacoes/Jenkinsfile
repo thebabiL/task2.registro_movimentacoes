@@ -4,11 +4,7 @@ pipeline {
     environment {
         PROJECT_DIR = 'registro_movimentacoes'
         IMAGE_NAME = "registro_movimentacoes:${env.BUILD_NUMBER}"
-        VM_HOST = '177.44.248.51'
-        VM_USER = 'univates'
-        VM_BASE_DIR = '/home/univates/registro-movimentacoes'
         JAVA_OPTS = '-Xms128m -Xmx256m'
-        SSH_KEY_FILE = '/var/jenkins_home/.ssh/jenkins_univates'
     }
 
     options {
@@ -83,11 +79,10 @@ pipeline {
 
         stage('Build Docker') {
             steps {
-                echo 'Cria a imagem Docker e salva um arquivo .tar para enviar para a VM via SSH.'
+                echo 'Cria a imagem Docker usada pelos ambientes de integracao, homologacao e producao.'
                 dir(env.PROJECT_DIR) {
                     sh 'docker build -t ${IMAGE_NAME} .'
-                    sh 'mkdir -p target && docker save ${IMAGE_NAME} -o target/app-image.tar'
-                    archiveArtifacts artifacts: 'target/app-image.tar', fingerprint: true
+                    sh 'docker image inspect ${IMAGE_NAME}'
                 }
             }
         }
@@ -107,7 +102,7 @@ pipeline {
         stage('Deploy Homologacao') {
             steps {
                 input message: 'Aprovar deploy em homologacao?', ok: 'Deploy homologacao'
-                echo 'Envia a imagem Docker para a VM e atualiza homologacao em http://177.44.248.51:8082.'
+                echo 'Atualiza homologacao em http://177.44.248.51:8082 usando Docker Compose local.'
                 dir(env.PROJECT_DIR) {
                     sh './deploy/deploy.sh homolog ${IMAGE_NAME}'
                 }
@@ -117,7 +112,7 @@ pipeline {
         stage('Deploy Producao') {
             steps {
                 input message: 'Aprovar deploy em producao?', ok: 'Deploy producao'
-                echo 'Envia a imagem Docker para a VM e atualiza producao em http://177.44.248.51:8080.'
+                echo 'Atualiza producao em http://177.44.248.51:8080 usando Docker Compose local.'
                 dir(env.PROJECT_DIR) {
                     sh './deploy/deploy.sh production ${IMAGE_NAME}'
                 }
